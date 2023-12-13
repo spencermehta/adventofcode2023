@@ -4,4 +4,4 @@
  (libraries days core str))
 (env
   (dev
-    (flags (:standard -w -6 -w -32 -w -50))))
+    (flags (:standard -w -6 -w -32 -w -50 -w -26))))
