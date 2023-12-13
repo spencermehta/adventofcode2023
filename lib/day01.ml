@@ -84,7 +84,7 @@ let rec sum ls = match ls with
 
 let get_concat_of_line line = int_of_string (concat_ints (first_and_last (get_numbers (explode line))))
 
-let () = 
+let day01 = 
     (**print_list lines;*)
     (** printf "%s" (replace_string_words_with_numbers (first lines));*)
     let forward = (List.map lines (fun line -> replace_string_digit line digit_mapping)) in
@@ -100,3 +100,4 @@ let () =
     let int_list = (List.map concatted get_concat_of_line) in
     print_int_list int_list;
     printf "%d" (sum int_list)
+

@@ -1,0 +1,6 @@
+(library
+ (name day01)
+ (libraries core str))
+(env
+  (dev
+    (flags (:standard -w -6 -w -32 -w -50))))
