@@ -1,0 +1,7 @@
+(executable
+ (public_name day01)
+ (name main)
+ (libraries day01 core str))
+(env
+  (dev
+    (flags (:standard -w -6 -w -32 -w -50))))
