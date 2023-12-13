@@ -1,1 +1,1 @@
-let () = Day01.day01
+let () = Days.Day02.part1

@@ -1,7 +1,7 @@
 (executable
- (public_name day01)
+ (public_name aoc)
  (name main)
- (libraries day01 core str))
+ (libraries days core str))
 (env
   (dev
     (flags (:standard -w -6 -w -32 -w -50))))

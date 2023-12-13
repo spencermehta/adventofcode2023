@@ -1,6 +1,8 @@
+(include_subdirs unqualified) 
 (library
- (name day01)
- (libraries core str))
+ (name days)
+ (libraries core str)
+ (modules day01 day02))
 (env
   (dev
     (flags (:standard -w -6 -w -32 -w -50))))
