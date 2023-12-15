@@ -6,6 +6,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import com.mycompany.app.utils.InputReader;
 
@@ -39,11 +41,12 @@ public class Day05 {
 
 			List<Long> newSeeds = new ArrayList<>();
 			for (long seed : seeds) {
-				long target = map.map.getOrDefault(seed, seed);
+				long target = map.convert(seed);
 				newSeeds.add(target);
 			}
 
 			seeds = newSeeds;
+			System.out.println(seeds);
 		}
 
 		System.out.println(String.format("Final seeds %s", seeds));
@@ -74,23 +77,21 @@ public class Day05 {
 	public ConversionMap parseMap(List<String> lines) {
 		String name = lines.get(0).split("\\s+")[0];
 		System.out.println(name);
-		Map<Long, Long> map = new HashMap<>();
+		SortedSet<Mapping> mappings = new TreeSet<>();
 
 		for (String line : lines.subList(1, lines.size())) {
 			Mapping mapping = parseMapping(line);
-			for (long i = 0; i < mapping.length; i++) {
-				map.put(mapping.sourceStart + i, mapping.destStart + i);
-			}
+			mappings.add(mapping);
 		}
 
-		return new ConversionMap(name, map);
+		return new ConversionMap(name, mappings);
 	}
 
 	public Mapping parseMapping(String line) {
 		String[] numbers = line.stripLeading().split("\\s+");
-		int destStart = Integer.parseInt(numbers[0]);
-		int sourceStart = Integer.parseInt(numbers[1]);
-		int length = Integer.parseInt(numbers[2]);
+		long destStart = Long.parseLong(numbers[0]);
+		long sourceStart = Long.parseLong(numbers[1]);
+		long length = Long.parseLong(numbers[2]);
 
 		return new Mapping(destStart, sourceStart, length);
 	}
@@ -104,6 +105,22 @@ public class Day05 {
 
 		for (int i = 0; i < seedNumbers.length; i++) {
 			seeds.add(Long.parseLong(seedNumbers[i]));
+		}
+
+		return seeds;
+	}
+
+	public List<Seed> parseSeedsB(List<String> lines) {
+		String line = lines.get(0);
+		String seedNumbersString = line.split(":")[1];
+		String[] seedNumbers = seedNumbersString.stripLeading().split("\\s+");
+
+		List<Seed> seeds = new ArrayList<>(); 
+
+		for (int i = 0; i < seedNumbers.length; i+=2) {
+			long seed = Long.parseLong(seedNumbers[i]);
+			long length = Long.parseLong(seedNumbers[i+1]);
+			seeds.add(new Seed(seed, length));
 		}
 
 		return seeds;
