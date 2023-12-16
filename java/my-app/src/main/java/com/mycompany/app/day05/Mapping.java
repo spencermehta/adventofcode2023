@@ -30,4 +30,8 @@ public class Mapping implements Comparable<Mapping> {
 		}
     } 
 
+	public String toString() {
+		return String.format("%s\t%s\t%s", destStart, sourceStart, length);
+	}
+
 }

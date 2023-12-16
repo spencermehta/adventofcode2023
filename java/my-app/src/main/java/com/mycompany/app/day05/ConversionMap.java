@@ -26,6 +26,10 @@ public class ConversionMap {
 
 	}
 
+	public Iterator<Mapping> mappingsIterator() {
+		return mappings.iterator();
+	}
+
 	public String toString() {
 		return String.format("%s %s", name, mappings);
 	}
