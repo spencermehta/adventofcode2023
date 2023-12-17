@@ -10,6 +10,15 @@ import com.mycompany.app.utils.InputReader;
 public class Day10 {
 	int startX;
 	int startY;
+	public static final String ANSI_RESET = "\u001B[0m";
+	public static final String ANSI_BLACK = "\u001B[30m";
+	public static final String ANSI_RED = "\u001B[31m";
+	public static final String ANSI_GREEN = "\u001B[32m";
+	public static final String ANSI_YELLOW = "\u001B[33m";
+	public static final String ANSI_BLUE = "\u001B[34m";
+	public static final String ANSI_PURPLE = "\u001B[35m";
+	public static final String ANSI_CYAN = "\u001B[36m";
+	public static final String ANSI_WHITE = "\u001B[37m";
 
 	public static void main(String[] args) {
 		new Day10().solveB();
@@ -90,37 +99,49 @@ public class Day10 {
 			for (int x = 0; x < width; x++) {
 				Node node = grid[y][x];
 				char c = node.pipe.c;
+				/*
 				if (y == 4) {
 					System.out.println(String.format("char %s barParity %s, prevParity %s", c, barParity, prevParity));
 				}
+				*/
 
 				if (c == '|' && node.visited) {
 					barParity = !barParity;
-					System.out.print("|");
+					System.out.print(ANSI_CYAN + c + ANSI_RESET);
 				} else if (c == 'F' && node.visited) {
 					prevParity = 'F';
 					System.out.print(c);
 				} else if (c == 'J' && node.visited) {
 					if (prevParity == 'F') {
 						barParity = !barParity;
+						prevParity = 'J';
+						System.out.print(ANSI_CYAN + c + ANSI_RESET);
+					} else {
+						prevParity = 'J';
+						System.out.print(c);
 					}
-					prevParity = 'J';
-					System.out.print(c);
 				} else if (c == 'L' && node.visited) {
 					prevParity = 'L';
 					System.out.print(c);
 				} else if (c == '7' && node.visited) {
 					if (prevParity == 'L') {
 						barParity = !barParity;
+						prevParity = '7';
+						System.out.print(ANSI_CYAN + c + ANSI_RESET);
+					} else {
+						prevParity = '7';
+						System.out.print(c);
 					}
-					prevParity = '7';
-					System.out.print(c);
 				} else {
 					if (!barParity & !node.visited) {
 						inside += 1;
-						System.out.print("I");
+						System.out.print(ANSI_GREEN + 'I' + ANSI_RESET);
 					} else {
-						System.out.print(c);
+						if (node.visited) {
+							System.out.print(c);
+						} else {
+							System.out.print('.');
+						}
 					}
 				}
 
