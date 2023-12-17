@@ -7,7 +7,7 @@ public class Node implements Comparable<Node> {
 	public final int y;
 	public final char c;
 	public boolean visited = false;
-	public int depth;
+	public long depth;
 
 	public Node(int x, int y, char c) {
 		this.x = x;

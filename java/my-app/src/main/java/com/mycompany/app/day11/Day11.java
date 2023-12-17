@@ -1,8 +1,6 @@
 package com.mycompany.app.day11;
 
 import java.util.ArrayList;
-import java.util.Map.Entry;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -56,11 +54,11 @@ public class Day11 {
 		}
 		System.out.println(paths);
 		*/
-		List<Integer> paths = new ArrayList<>();
-		int sum = 0;
+		List<Long> paths = new ArrayList<>();
+		long sum = 0;
 		for (int i = 0; i < galaxies.size(); i++) {
 			for (int j = i+1; j < galaxies.size(); j++) {
-				int path = execute(i, j);
+				long path = execute(i, j);
 				paths.add(path);
 				sum += path;
 			}
@@ -70,7 +68,7 @@ public class Day11 {
 		System.out.println(sum);
 	}
 
-	int execute(int i, int j) {
+	long execute(int i, int j) {
 		List<String> lines = readInput();
 		Node[][] grid = createGrid(lines);
 
@@ -96,7 +94,7 @@ public class Day11 {
 
 	}
 
-	int shortestPath(Node galaxyLeft, Node galaxyRight, Node[][] grid) {
+	long shortestPath(Node galaxyLeft, Node galaxyRight, Node[][] grid) {
 		Node start = galaxyLeft;
 		Node finish = galaxyRight;
 		// System.out.println(String.format("Searching from %s for %s", start, finish));
@@ -119,7 +117,11 @@ public class Day11 {
 			List<Node> neighbours = getNeighbours(node, grid);
 
 			for (Node neighbour : neighbours) {
-				neighbour.depth = node.depth + 1;
+				if (node.c == 'X') {
+					neighbour.depth = node.depth + 1000000;
+				} else {
+					neighbour.depth = node.depth + 1;
+				}
 			}
 
 			// System.out.println("neighbours " + neighbours);
@@ -236,33 +238,21 @@ public class Day11 {
 			}
 		}
 
-		int newHeight = height + rowsToBeExpanded.size();
-		int newWidth = width + columnsToBeExpanded.size();
 		System.out.println(rowsToBeExpanded);
 		System.out.println(columnsToBeExpanded);
-		System.out.println(newHeight + ", " + newWidth);
 
-		Node[][] newGrid = new Node[newHeight][newWidth];
-
-		int newYs = 0;
+		Node[][] newGrid = new Node[height][width];
 
 		for (int y = 0; y < height; y++) {
-			int newXs = 0;
-			if (rowsToBeExpanded.contains(y)) {
-				for (int x = 0; x < newWidth; x++) {
-					newGrid[y + newYs][x + newXs] = new Node(x + newXs, y + newYs, '.');
-				}
-				newYs++;
-				for (int x = 0; x < newWidth; x++) {
-					newGrid[y + newYs][x + newXs] = new Node(x + newXs, y + newYs, '.');
+			for (int x = 0; x < width; x++) {
+				newGrid[y][x] = new Node(x, y, grid[y][x].c);
+				if (columnsToBeExpanded.contains(x)) {
+					newGrid[y][x] = new Node(x, y, 'X');
 				}
 			}
-			for (int x = 0; x < width; x++) {
-				newGrid[y + newYs][x + newXs] = new Node(x + newXs, y + newYs, grid[y][x].c);
-				if (columnsToBeExpanded.contains(x)) {
-					newGrid[y + newYs][x + newXs] = new Node(x + newXs, y + newYs, '.');
-					newXs++;
-					newGrid[y + newYs][x + newXs] = new Node(x + newXs, y + newYs, '.');
+			if (rowsToBeExpanded.contains(y)) {
+				for (int x = 0; x < width; x++) {
+					newGrid[y][x] = new Node(x, y, 'X');
 				}
 			}
 		}
