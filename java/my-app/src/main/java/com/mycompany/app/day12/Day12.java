@@ -10,7 +10,7 @@ import com.mycompany.app.utils.InputReader;
 
 public class Day12 {
 
-	private Map<Position, Integer> cache;
+	private Map<Position, Long> cache;
 	public static void main(String[] args) {
 		new Day12().solveA();
 	}
@@ -19,7 +19,7 @@ public class Day12 {
 		List<String> lines = readInput();
 		List<Record> records = parseToRecords(lines);
 
-		int sum = 0;
+		long sum = 0;
 		for (Record r : records) {
 			cache = new HashMap<>();
 
@@ -31,45 +31,96 @@ public class Day12 {
 				newN[i] = r.numbers[j];
 			}
 
-			r = new Record(newP, newN);
+			System.out.println(r +  newP);
 
-			System.out.println(r);
+			int[] newNn = new int[newN.length + 1];
 
-			int p = evaluateRecord(r.pattern, r.numbers, 0);
+			for (int j = 0; j < newN.length; j++) {
+				newNn[j] = newN[j];
+			}
+
+			newNn[newNn.length-1] = 0;
+
+			long p = evaluateRecord(newP, newNn, 0, 0, 0);
 			sum += p;
 			System.out.println(p);
 		}
 		System.out.println("sum " + sum);
 	}
 
-	int evaluateRecord(String pattern, int[] blocks, int i) {
-		Integer cachedResult = cache.get(new Position(pattern, blocks, i));
+	long evaluateRecord(String pattern, int[] blocks, int i, int bi, int l) {
+		//System.out.println(String.format("evaluating %s %s %s %s", pattern, i, bi, l));
+		Long cachedResult = cache.get(new Position(i, bi, l));
+		//System.out.println(cache.size());
 		if (cachedResult != null) {
-			System.out.println("pulling cache res");
+			System.out.println(String.format("pulling cache res %s %s %s", i, bi, l, cachedResult));
 			return cachedResult;
 		}
 		// System.out.println(i + " - " + pattern);
-		if (i == pattern.length()-1) {
-			if (validPattern(pattern, blocks)) {
-				System.out.println("valid" + pattern);
+		if (i == pattern.length()) {
+			/*
+			if (bi == blocks.length && l == 0) {
+				System.out.println(pattern + "return 1");
 				return 1;
-			} else {
-				return 0;
+			} 
+			*/
+			if (bi == (blocks.length - 1) && (l == 0)) {
+				//System.out.println(pattern + "return 1");
+				return 1;
 			}
+			if (bi == (blocks.length - 2) && (blocks[bi] == l)) {
+				//System.out.println(pattern + "return 1");
+				return 1;
+			}
+			//System.out.println(String.format("%s %s %s %s set 0", pattern, i, bi, l));
+			return 0;
 		}
 
 		char c = pattern.charAt(i);
 		//System.out.println(c);
-		int result;
-		if (c != '?') {
-			result = evaluateRecord(pattern, blocks, i+1);
-		} else {
-			result =  
-				evaluateRecord(pattern.substring(0, i) + "." + pattern.substring(i+1), blocks, i + 1) +
-				evaluateRecord(pattern.substring(0, i) + "#" + pattern.substring(i+1), blocks, i+1);
+		long result = 0;
+
+
+		if (bi >= blocks.length) {
+			//System.out.println(String.format("%s %s %s %s set 0 exceed blocks", pattern, i, bi, l));
+			result = 0;
+		}
+		else if (l > blocks[bi]) {
+			//System.out.println(String.format("%s %s %s %s set 0 exceeded current block size", pattern, i, bi, l));
+			result = 0;
 		}
 
-		cache.put(new Position(pattern, blocks, i), result);
+		else if (c != '?') {
+			if (c == '#') {
+				result = evaluateRecord(pattern, blocks, i+1, bi, l+1);
+			}
+			else { // .
+				if (l != 0 && l < blocks[bi]) {
+					result = 0;
+				} else {
+					int newBi = l != 0 ? bi+1 : bi;
+					result = evaluateRecord(pattern, blocks, i+1, newBi, 0);
+				}
+			}
+		} else {
+			/*
+			result =  
+				evaluateRecord(pattern.substring(0, i) + "." + pattern.substring(i+1), blocks, i, bi, l) +
+				evaluateRecord(pattern.substring(0, i) + "#" + pattern.substring(i+1), blocks, i, bi, l);
+			*/
+			result +=  
+				evaluateRecord(pattern.substring(0, i) + "#" + pattern.substring(i+1), blocks, i+1, bi, l+1);
+
+
+				if (l != 0 && l < blocks[bi]) {
+					result += 0;
+				} else {
+					int newBi = l != 0 ? bi+1 : bi;
+					result += evaluateRecord(pattern, blocks, i+1, newBi, 0);
+				}
+		}
+
+		cache.put(new Position(i, bi, l), result);
 		return result;
 	}
 
@@ -135,7 +186,7 @@ public class Day12 {
 	}
 
 	List<String> readInput() {
-		return new InputReader().readInput("/home/spencer/projects/hobby/aoc/2023/input/day12/test.txt");
+		return new InputReader().readInput("/home/spencer/projects/hobby/aoc/2023/input/day12/input.txt");
 	}
 
 }
