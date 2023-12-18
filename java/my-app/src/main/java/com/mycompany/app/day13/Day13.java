@@ -41,9 +41,9 @@ public class Day13 {
 		int width = grid[0].length;
 
 
-		boolean[] possibleIndices = new boolean[width];
+		int[] possibleIndices = new int[width];
 		for (int w = 0; w < width; w++) {
-			possibleIndices[w] = true;
+			possibleIndices[w] = 0;
 		}
 
 		for (int y = 0; y < height; y++) {
@@ -56,8 +56,8 @@ public class Day13 {
 
 				char[] left = Arrays.copyOfRange(line, leftStart, leftStart + sizeToMatch);
 				char[] right = Arrays.copyOfRange(line, rightStart, rightStart + sizeToMatch);
-				boolean eq = Arrays.equals(left, reverse(right));
-				possibleIndices[i_x] = possibleIndices[i_x] && eq;
+				int diffs = numDiffChars(left, reverse(right));
+				possibleIndices[i_x] = possibleIndices[i_x] + diffs;
 				//System.out.println(String.format("%s\ni_x %s size %s left %s right %s\n", Arrays.toString(line), i_x, sizeToMatch, leftStart, rightStart));
 				//System.out.println("left " + Arrays.toString(left));
 				//System.out.println("right " + Arrays.toString(right));
@@ -67,9 +67,20 @@ public class Day13 {
 		}
 
 		possibleIndices = Arrays.copyOfRange(possibleIndices, 1, possibleIndices.length);
-		//System.out.println(Arrays.toString(possibleIndices));
-		int mirrorIndex = indexOf(possibleIndices, true) + 1;
-		return mirrorIndex;
+		System.out.println(Arrays.toString(possibleIndices));
+		int mirrorIndex = indexOf(possibleIndices, 1) + 1;
+		return mirrorIndex; //TODO
+	}
+
+	public int numDiffChars(char[] left, char[] right) {
+		int diffs = 0;
+		for (int i = 0; i < left.length; i++) {
+			if (left[i] != right[i]) {
+				diffs++;
+			}
+		}
+		return diffs;
+
 	}
 
 	public char[][] pivot(char[][] grid) {
@@ -87,7 +98,7 @@ public class Day13 {
 		return newGrid;
 	}
 
-	public int indexOf(boolean[] arr, boolean c) {
+	public int indexOf(int[] arr, int c) {
 		for (int i = 0; i < arr.length; i++) {
 			if (arr[i] == c) {
 				return i;
