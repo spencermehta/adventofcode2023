@@ -1,24 +1,78 @@
 package com.mycompany.app.day16;
 
 import java.util.List;
-
 import com.mycompany.app.utils.InputReader;
 
 public class Day16 {
-	private static int count = 0;
 	public static void main(String[] args) {
-		new Day16().solveA();
+		try {
+			new Day16().solveB();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
-	public void solveA() {
+	public void solveA() throws InterruptedException {
 		char[][] grid = readInput();
 		System.out.println(printGrid(grid));
 
 		int[][][] visited = getVisited(grid);
 		step(grid, visited, 0, 0, 'r');
 
-		System.out.println(printDistinctDirections(visited));
 		System.out.println(countEnergised(visited));
+	}
+
+	public void solveB() throws InterruptedException {
+		char[][] grid = readInput();
+		System.out.println(printGrid(grid));
+
+
+		int max = 0;
+		for (int i = 0; i < grid.length; i++) {
+			System.out.println(i);
+			int[][][] visited = getVisited(grid);
+			step(grid, visited, i, 0, 'r');
+			int e = countEnergised(visited);
+			if (e > max) {
+				max = e;
+			}
+
+		}
+
+		for (int i = 0; i < grid.length; i++) {
+			System.out.println(i);
+			int[][][] visited = getVisited(grid);
+			step(grid, visited, i, grid[0].length-1, 'l');
+			int e = countEnergised(visited);
+			if (e > max) {
+				max = e;
+			}
+
+		}
+
+		for (int i = 0; i < grid[0].length; i++) {
+			System.out.println(i);
+			int[][][] visited = getVisited(grid);
+			step(grid, visited, 0, i, 'd');
+			int e = countEnergised(visited);
+			if (e > max) {
+				max = e;
+			}
+
+		}
+
+		for (int i = 0; i < grid[0].length; i++) {
+			System.out.println(i);
+			int[][][] visited = getVisited(grid);
+			step(grid, visited, grid.length-1, i, 'u');
+			int e = countEnergised(visited);
+			if (e > max) {
+				max = e;
+			}
+
+		}
+
+		System.out.println(max);
 	}
 
 	int dirToInt(char dir) {
@@ -33,24 +87,16 @@ public class Day16 {
 		}
 	}
 
-	void step(char[][] grid, int[][][] visited, int y, int x, char dir) {
-		/*
-		if (count > 100) {
-			return;
-		}
-		*/
-		//System.out.println(printDistinctDirections(visited));
-		count++;
+	void step(char[][] grid, int[][][] visited, int y, int x, char dir) throws InterruptedException {
+		Thread.sleep(1);
 		if ((y >= grid.length) || (y < 0) || (x >= grid[0].length) || (x < 0)) {
-			System.out.println("out of bounds");
 			return;
 		}
-		if (visited[y][x][dirToInt(dir)] > 0) {
+		if (visited[y][x][dirToInt(dir)] == 1) {
 			return;
 		}
 		visited[y][x][dirToInt(dir)] = 1;
 
-		System.out.println(String.format("Stepped on %s %s going %s", y, x, dir));
 		char c = grid[y][x];
 
 		if (c == '.') {
@@ -91,7 +137,7 @@ public class Day16 {
 			} else {
 				newDir = 'l';
 				nextY = y;
-				nextX = x+1;
+				nextX = x-1;
 			}
 
 			step(grid, visited, nextY, nextX, newDir);
@@ -132,7 +178,6 @@ public class Day16 {
 				step(grid, visited, nextY, nextX, dir);
 				return;
 			} else {
-				System.out.println("splitting on -");
 				step(grid, visited, y, x-1, 'l'); 
 				step(grid, visited, y, x+1, 'r');
 				return;
@@ -149,7 +194,6 @@ public class Day16 {
 				step(grid, visited, nextY, nextX, dir);
 				return;
 			} else {
-				System.out.println("splitting on |");
 				step(grid, visited, y-1, x, 'u');
 				step(grid, visited, y+1, x, 'd');
 				return;
