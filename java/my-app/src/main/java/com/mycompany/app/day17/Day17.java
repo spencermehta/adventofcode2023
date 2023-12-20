@@ -44,6 +44,10 @@ public class Day17 {
 
 			Point p = q.poll();
 			String key = p.x + "," + p.y + "," + p.dir + "," + p.numInThisDir;
+			if (p.x == endX && p.y == endY) {
+				System.out.println("end " + p.weightSoFar);
+				return;
+			}
 			if (distance.containsKey(key)) {
 				continue;
 			}
@@ -93,26 +97,52 @@ public class Day17 {
 		List<Point> points = new ArrayList<>();
 
 		int[] dirs = {0,1,2,3};
+		int[] moveMultiplier = {1,4};
 		int[][] moves = {{0,1},{1,0},{0,-1},{-1,0}};
 
-		int dir = 0;
-		for (int[] move : moves) {
-			int x = p.x + move[0];
-			int y = p.y + move[1];
-			if ((x >= 0) && (x < grid[0].length)) {
-				if ((y >= 0) && (y < grid.length)) {
-					if (dir != dirs[(p.dir+2) % 4] ) {
-						int cost = grid[y][x];
-						int numInThisDir = p.dir == dir ? p.numInThisDir + 1 : 1;
-						if (numInThisDir <= 3) {
-							Point q = new Point(x, y, numInThisDir, dir, p.weightSoFar + cost);
-							points.add(q);
+		//for (int moveMult : moveMultiplier) {
+			int dir = 0;
+			for (int[] move : moves) {
+				int moveMult;
+				if ((dir != p.dir) || (p.numInThisDir == 0)) {
+					moveMult = moveMultiplier[1];
+				} else {
+					moveMult = moveMultiplier[0];
+				}
+				int x = p.x + (moveMult*move[0]);
+				int y = p.y + (moveMult*move[1]);
+				if ((x >= 0) && (x < grid[0].length)) {
+					if ((y >= 0) && (y < grid.length)) {
+						if (dir != (dirs[(p.dir+2) % 4])) {
+							int cost = 0;
+							System.out.println(p.x + ", " + p.y + " - " + x + ", " + y);
+							if ((y < p.y) || (x < p.x)) {
+								for (int i = p.y + ((move[1]*1)); i >= y; i--) {
+									for (int j = p.x + (move[0]*1); j >= x; j--) {
+										System.out.println(i + ", " + j);
+										cost += grid[i][j];
+									}
+								}
+							} else {
+								for (int i = p.y + ((move[1]*1)); i <= y; i++) {
+									for (int j = p.x + (move[0]*1); j <= x; j++) {
+										cost += grid[i][j];
+									}
+								}
+							}
+							//int cost = grid[y][x];
+							int numInThisDir = p.dir == dir ? (p.numInThisDir + moveMult) : moveMult;
+							System.out.println(numInThisDir);
+							if ((numInThisDir <= 10) && (numInThisDir >=4)) {
+								Point q = new Point(x, y, numInThisDir, dir, p.weightSoFar + cost);
+								points.add(q);
+							}
 						}
 					}
 				}
+				dir++;
 			}
-			dir++;
-		}
+		//}
 		return points;
 	}
 
