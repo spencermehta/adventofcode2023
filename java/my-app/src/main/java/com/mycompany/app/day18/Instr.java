@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Instr {
-	private final List<Character> dirs = Arrays.asList( 'R', 'L', 'U', 'D' );
+	private final List<Character> dirs = Arrays.asList( 'R', 'L', 'D', 'U' );
 	public final int dir;
 	public final int steps;
 	public final String colour;
