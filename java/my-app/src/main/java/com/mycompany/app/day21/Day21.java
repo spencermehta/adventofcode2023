@@ -25,11 +25,11 @@ public class Day21 {
 		wavefront.add(start);
 		System.out.println("wavefront " + wavefront);
 
-		int steps = 64;
+		int steps = 1000;
 		for (int i = 0; i < steps; i++) {
 			wavefront = step(wavefront);
 
-			System.out.println(wavefront);
+			//System.out.println(wavefront);
 			System.out.println(wavefront.size());
 		}
 	}
@@ -48,16 +48,18 @@ public class Day21 {
 		List<Point> neighbours = new ArrayList<>();
 
 		for (int[] move : moves) {
-			int x = p.x + move[0];
-			int y = p.y + move[1];
+			int x = (p.x + move[0]);
+			int y = (p.y + move[1]);
 
-			if ((x >= 0) && (x < grid[0].length) && (y >= 0) && (y < grid.length)) {
-				char c = grid[y][x];
-				if (c != '#') {
-					neighbours.add(new Point(x, y));
-				}
+			int gridx = ((x % grid[0].length) + grid[0].length) % grid[0].length;
+			int gridy = ((y % grid.length) + grid.length) % grid.length;
 
+			//System.out.println(String.format(" pos (%s, %s) move (%s, %s) gxy (%s, %s)", p.x, p.x, move[0], move[1], gridx, gridy));
+			char c = grid[gridy][gridx];
+			if (c != '#') {
+				neighbours.add(new Point(x, y));
 			}
+
 		}
 
 		return neighbours;
@@ -74,7 +76,7 @@ public class Day21 {
 	}
 
 	void readInput() {
-		List<String> lines = new InputReader().readInput("/home/spencer/projects/hobby/aoc/2023/input/day21/input.txt");
+		List<String> lines = new InputReader().readInput("/home/spencer/projects/hobby/aoc/2023/input/day21/test.txt");
 		grid = new char[lines.size()][lines.get(0).length()];
 		for (int y = 0; y < lines.size(); y++) {
 			for (int x = 0; x < lines.get(0).length(); x++) {
