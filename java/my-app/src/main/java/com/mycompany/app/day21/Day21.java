@@ -13,7 +13,7 @@ public class Day21 {
 	Point start;
 
 	public static void main(String[] args) {
-		new Day21().solveA();
+		new Day21().solveB();
 	}
 
 	void solveA() {
@@ -33,6 +33,30 @@ public class Day21 {
 			System.out.println(wavefront.size());
 		}
 	}
+
+	void solveB() {
+		readInput();
+		printGrid();
+
+		// steps = 65/2 + 131x
+		System.out.println(solveForSteps(65));
+		System.out.println(solveForSteps(65 + 131));
+		System.out.println(solveForSteps(65 + (2*131)));
+		// fits to polynomial x^2 + 2x + a 
+		// ans is at x = ( S - 65 ) / 131
+	}
+
+	int solveForSteps(int steps) {
+		Set<Point> wavefront = new HashSet<>();
+		wavefront.add(start);
+
+		for (int i = 0; i < steps; i++) {
+			wavefront = step(wavefront);
+		}
+
+		return wavefront.size();
+	}
+
 
 	Set<Point> step(Set<Point> wavefront) {
 		Set<Point> newWavefront = new HashSet<>();
@@ -76,7 +100,7 @@ public class Day21 {
 	}
 
 	void readInput() {
-		List<String> lines = new InputReader().readInput("/home/spencer/projects/hobby/aoc/2023/input/day21/test.txt");
+		List<String> lines = new InputReader().readInput("/home/spencer/projects/hobby/aoc/2023/input/day21/input.txt");
 		grid = new char[lines.size()][lines.get(0).length()];
 		for (int y = 0; y < lines.size(); y++) {
 			for (int x = 0; x < lines.get(0).length(); x++) {
