@@ -1,5 +1,6 @@
 package com.mycompany.app.day20;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -18,7 +19,7 @@ public class Day20 {
 	Queue<Pulse> queue = new LinkedList<>();
 
 	public static void main(String[] args) {
-		new Day20().solveA();
+		new Day20().solveB();
 	}
 
 	void solveA() {
@@ -28,11 +29,49 @@ public class Day20 {
 		initialiseInputs();
 
 		int buttons = 0;
-		while (buttons < 1000) {
+		while (buttons < Long.MAX_VALUE) {
 			buttons++;
 			queue.add(new Pulse("button", "broadcaster", false));
 			while (queue.peek() != null) {
-				pulse(queue.poll());
+				Pulse p = queue.poll();
+				pulse(p);
+			}
+		}
+
+		System.out.println(low);
+		System.out.println(high);
+		System.out.println(low * high);
+	}
+
+	/*
+&jq -> rx
+
+&gt -> jq
+&vr -> jq
+&nl -> jq
+&lr -> jq
+	*/
+
+	List<String> rxMinusTwo = Arrays.asList("gt", "vr", "nl", "lr");
+	Map<String, Integer> loops = new HashMap<>();
+	Map<String, Integer> encountered = new HashMap<>();
+	List<Integer> loopLengths = new ArrayList<>();
+
+	int buttons = 0;
+
+	void solveB() {
+		readInput();
+		System.out.println(modules);
+
+		initialiseInputs();
+
+		while (buttons < Long.MAX_VALUE) {
+			buttons++;
+			System.out.println(buttons);
+			queue.add(new Pulse("button", "broadcaster", false));
+			while (queue.peek() != null) {
+				Pulse p = queue.poll();
+				pulse(p);
 			}
 		}
 
@@ -47,7 +86,25 @@ public class Day20 {
 		} else {
 			low++;
 		}
-		System.out.println(pulse);
+
+		if (pulse.high) {
+			int e = encountered.getOrDefault(pulse.from, 0); 
+			if (rxMinusTwo.contains(pulse.from) && (e == 2) && (loops.containsKey(pulse.from))) {
+				loopLengths.add(buttons-loops.get(pulse.from));
+			} 
+
+			int x = encountered.getOrDefault(pulse.from, 0);
+			encountered.put(pulse.from, x+1);
+			loops.put(pulse.from, buttons);
+		}
+
+		if (loopLengths.size() == rxMinusTwo.size()) {
+			System.out.println(loopLengths);
+			// paste the above into python math.lcm()
+			System.exit(0);
+		}
+
+		//System.out.println(pulse);
 		if (!modules.containsKey(pulse.to)) {
 			return;
 		}
