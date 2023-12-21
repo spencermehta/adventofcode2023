@@ -2,6 +2,7 @@ package com.mycompany.app.day19;
 
 import java.util.List;
 import java.util.Map;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -16,12 +17,12 @@ public class Day19 {
 	List<int[]> parts = new ArrayList<>();
 
 	public static void main(String[] args) {
-		new Day19().solveA();
+		new Day19().solveB();
 	}
 	
-	int sum = 0;
 
 	public void solveA() {
+		int sum = 0;
 		readInput();
 		for (int[] part : parts) {
 			boolean accepted = eval("in", part);
@@ -35,6 +36,101 @@ public class Day19 {
 
 		System.out.println(sum);
 
+	}
+
+	public void solveB() {
+		readInput();
+
+		int[][] ranges = {{1,4000}, {1,4000}, {1,4000}, {1,4000}};
+
+		BigDecimal sum = evalRange("in", ranges);
+
+		System.out.println(sum);
+	}
+
+	BigDecimal combinations(int[][] ranges) {
+		int xWidth = ranges[0][1] - ranges[0][0] + 1;
+		int mWidth = ranges[1][1] - ranges[1][0] + 1;
+		int aWidth = ranges[2][1] - ranges[2][0] + 1;
+		int sWidth = ranges[3][1] - ranges[3][0] + 1;
+		System.out.println(String.format("%s %s %s %s", xWidth, mWidth, aWidth, sWidth));
+		return new BigDecimal(xWidth).multiply(new BigDecimal(mWidth)).multiply(new BigDecimal(aWidth)).multiply(new BigDecimal(sWidth));
+
+	}
+
+	BigDecimal evalRange(String name, int[][] ranges) {
+
+		for (int[] r : ranges) {
+			if (r[0] >= r[1]) {
+				System.out.println("rejecting " + rangesToStr(ranges));
+				return new BigDecimal(0);
+			}
+		}
+
+		if (name.equals("A")) {
+			System.out.println("accepting " + combinations(ranges) + " for " + rangesToStr(ranges));
+			return combinations(ranges); 
+		} else if (name.equals("R")) {
+			System.out.println("rejecting " + rangesToStr(ranges));
+			return new BigDecimal(0);
+		}
+
+
+		Defn d = defns.get(name);
+		System.out.println("\n" + d);
+		BigDecimal sum = new BigDecimal(0);
+		for (Expression expr : d.expressions) {
+			if (expr instanceof UnconditionalExpression) {
+				System.out.println("uncond " + rangesToStr(ranges));
+				sum = sum.add(evalRange(expr.target(), copy(ranges)));
+			}
+			else if (expr instanceof ConditionalExpression) {
+				Condition condition = ((ConditionalExpression)expr).condition;
+
+				if (operators.get(condition.op) == '<') {
+					int[][] newRanges = copy(ranges);
+					newRanges[condition.category][1] = condition.comparator-1;
+					ranges[condition.category][0] = condition.comparator;
+
+					System.out.println("cond " + rangesToStr(newRanges));
+					sum = sum.add(evalRange(expr.target(), newRanges));
+				} else { 
+					int[][] newRanges = copy(ranges);
+					newRanges[condition.category][0] = condition.comparator+1;
+					ranges[condition.category][1] = condition.comparator;
+					System.out.println("cond " + rangesToStr(ranges));
+					sum = sum.add(evalRange(expr.target(), newRanges));
+				}
+			}
+
+		}
+
+		return sum;
+	}
+
+	String rangesToStr(int[][] ranges) {
+		String s = "";
+		for (int[] r : ranges) {
+			s += String.format("(%s, %s)", r[0], r[1]);
+		}
+
+		return s;
+	}
+
+	int[][] copy(int[][] arr) {
+		int[][] n = new int[arr.length][arr[0].length];
+		for (int y = 0; y < arr.length; y++) {
+			for (int x=0; x < arr[0].length; x++) {
+				n[y][x] = arr[y][x];
+			}
+		}
+
+		return n;
+	}
+
+
+	String hash(String name, int[] part) {
+		return String.format("%s,%s,%s,%s,%s", name, part[0], part[1], part[2], part[3]);
 	}
 
 	boolean eval(String name, int[] part) {
@@ -59,7 +155,8 @@ public class Day19 {
 			val = part[category];
 		}
 
-		return eval(expr.target(), part);
+		boolean res = eval(expr.target(), part);
+		return res;
 	}
 
 	void readInput() {
