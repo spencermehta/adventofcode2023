@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class Line implements Comparable<Line> {
+public class InitLine implements Comparable<InitLine> {
 	public final Coord start;
 	public final Coord finish;
 	public List<Line> supporting;
 	public List<Line> supportedBy;
 
-	public Line(Coord start, Coord finish) {
+	public InitLine(Coord start, Coord finish) {
 		this.start = start;
 		this.finish = finish;
 		supporting = new ArrayList<>();
@@ -21,10 +21,7 @@ public class Line implements Comparable<Line> {
 		return String.format("%s->%s", start, finish);
 	}
 
-	public int compareTo(Line o) {
-		if (this.equals(o)) {
-			return 0;
-		}
+	public int compareTo(InitLine o) {
 		return start.z - o.start.z;
 	}
 

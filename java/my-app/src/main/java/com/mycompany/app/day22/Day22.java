@@ -2,35 +2,30 @@ package com.mycompany.app.day22;
 
 import java.util.ArrayList;
 import java.util.Deque;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Queue;
+import java.util.Set;
 
 import com.mycompany.app.utils.InputReader;
 
 public class Day22 {
 	public static void main(String[] args) {
-		new Day22().solveA();
+		new Day22().solveB();
 	}
 
-	void solveA() {
-		List<Line> lines = readInput();
-		int maxZ = 0;
-		for (Line l : lines) {
-			if (l.finish.z > maxZ) {
-				maxZ = l.finish.z;
-			}
-			//System.out.println(l);
-		}
+	void solveB() {
+		List<InitLine> lines = readInput();
 
-		Queue<Line> queue = new PriorityQueue<>();
+		Queue<InitLine> queue = new PriorityQueue<>();
 		queue.addAll(lines);
 
 		Deque<Line> fallen = new LinkedList<>();
 
 		while (queue.peek() != null) {
-			Line l = queue.poll();
+			InitLine l = queue.poll();
 			int minZ = 1;
 			for (Line fallenLine : fallen) {
 				if (l.intersects(fallenLine)) {
@@ -63,26 +58,50 @@ public class Day22 {
 		}
 
 
-		int count = 0;
+		int sum = 0;
 		for (Line l : fallen) {
-			boolean canDisintegrate = true;
-			for (Line supportedLine : l.supporting) {
-				if (supportedLine.supportedBy.size() == 1) {
-					canDisintegrate = false;
-				}
-			}
-			if (canDisintegrate) {
-				count++;
-			}
+			int wouldFall = chainReaction(l, new HashSet<Line>());
+			sum += wouldFall - 1;
 		}
 
-		System.out.println(count);
-		System.out.println(maxZ);
+		System.out.println("wouldFall " + sum);
 	}
 
-	List<Line> readInput() {
+	int chainReaction(Line startLine, Set<Line> fallen) {
+		Queue<Line> queue = new LinkedList<>();
+		fallen.add(startLine);
+		queue.add(startLine);
+
+		while (queue.peek() != null) {
+			Line line = queue.poll();
+			Set<Line> wouldFall = causesToFall(line, fallen);
+			queue.addAll(wouldFall);
+			fallen.addAll(wouldFall);
+		}
+
+		System.out.println("with start line " + startLine + " - " + fallen);
+		return fallen.size();
+	}
+
+	Set<Line> causesToFall(Line line, Set<Line> fallen) {
+		Set<Line> wouldFall = new HashSet<>();
+		for (Line supportedLine : line.supporting) {
+			int otherSupport = 0;
+			for (Line support : supportedLine.supportedBy) {
+				if (!fallen.contains(support)) {
+					otherSupport++;
+				}
+			}
+			if (otherSupport == 0) {
+				wouldFall.add(supportedLine);
+			}
+		}
+		return wouldFall;
+	}
+
+	List<InitLine> readInput() {
 		List<String> lines = new InputReader().readInput("/home/spencer/projects/hobby/aoc/2023/input/day22/input.txt");
-		List<Line> parsedLines = new ArrayList<>();
+		List<InitLine> parsedLines = new ArrayList<>();
 		for (String line : lines) {
 			String[] l = line.split("~")[0].split(",");
 			String[] r = line.split("~")[1].split(",");
@@ -90,7 +109,7 @@ public class Day22 {
 			Coord start = new Coord(Integer.parseInt(l[0]), Integer.parseInt(l[1]), Integer.parseInt(l[2]));
 			Coord finish = new Coord(Integer.parseInt(r[0]), Integer.parseInt(r[1]), Integer.parseInt(r[2]));
 
-			parsedLines.add(new Line(start, finish));
+			parsedLines.add(new InitLine(start, finish));
 		}
 
 		return parsedLines;
