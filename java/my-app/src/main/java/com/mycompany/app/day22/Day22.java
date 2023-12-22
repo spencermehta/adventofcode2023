@@ -16,14 +16,16 @@ public class Day22 {
 
 	void solveA() {
 		List<Line> lines = readInput();
+		int maxZ = 0;
 		for (Line l : lines) {
-			System.out.println(l);
+			if (l.finish.z > maxZ) {
+				maxZ = l.finish.z;
+			}
+			//System.out.println(l);
 		}
 
 		Queue<Line> queue = new PriorityQueue<>();
 		queue.addAll(lines);
-
-		System.out.println(queue);
 
 		Deque<Line> fallen = new LinkedList<>();
 
@@ -51,6 +53,7 @@ public class Day22 {
 				}
 			}
 
+			System.out.println(l + " falls to " + fallenL + " - " + fallenL.supportedBy);
 			fallen.add(fallenL);
 		}
 
@@ -58,10 +61,27 @@ public class Day22 {
 		for (Line l : fallen) {
 			System.out.println(l);
 		}
+
+
+		int count = 0;
+		for (Line l : fallen) {
+			boolean canDisintegrate = true;
+			for (Line supportedLine : l.supporting) {
+				if (supportedLine.supportedBy.size() == 1) {
+					canDisintegrate = false;
+				}
+			}
+			if (canDisintegrate) {
+				count++;
+			}
+		}
+
+		System.out.println(count);
+		System.out.println(maxZ);
 	}
 
 	List<Line> readInput() {
-		List<String> lines = new InputReader().readInput("/home/spencer/projects/hobby/aoc/2023/input/day22/test.txt");
+		List<String> lines = new InputReader().readInput("/home/spencer/projects/hobby/aoc/2023/input/day22/input.txt");
 		List<Line> parsedLines = new ArrayList<>();
 		for (String line : lines) {
 			String[] l = line.split("~")[0].split(",");

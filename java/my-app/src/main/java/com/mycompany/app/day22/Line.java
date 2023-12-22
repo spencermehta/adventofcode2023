@@ -25,8 +25,8 @@ public class Line implements Comparable<Line> {
 	}
 
 	public boolean intersects(Line o) {
-		return ((start.x <= o.finish.x) && (o.start.x <= o.finish.x))
-			&& ((start.y <= o.finish.y) && (o.start.y <= o.finish.y));
+		return ((start.x <= o.finish.x) && (o.start.x <= finish.x))
+			&& ((start.y <= o.finish.y) && (o.start.y <= finish.y));
 	}
 
 	public int zLength() {
